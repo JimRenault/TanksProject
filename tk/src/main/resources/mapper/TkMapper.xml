@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tk.mapper.TkMapper">
+
+    <resultMap type="Tk" id="TkResult">
+        <result property="tkId" column="tk_id"/>
+        <result property="filesId" column="files_id"/>
+        <result property="tkName" column="tk_name"/>
+        <result property="tkX" column="tk_x"/>
+        <result property="tkY" column="tk_y"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="tkOrient" column="tk_orient"/>
+    </resultMap>
+
+    <sql id="selectTkVo">
+        select tk_id,
+               files_id,
+               tk_name,
+               tk_x,
+               tk_y,
+               update_time,
+               tk_orient
+        from tk
+    </sql>
+
+    <select id="selectTkList" parameterType="Tk" resultMap="TkResult">
+        <include refid="selectTkVo"/>
+        <where>
+            <if test="filesId != null ">
+                and files_id = #{filesId}
+            </if>
+            <if test="tkName != null  and tkName != ''">
+                and tk_name like concat('%', #{tkName}, '%')
+            </if>
+            <if test="tkX != null  and tkX != ''">
+                and tk_x = #{tkX}
+            </if>
+            <if test="tkY != null  and tkY != ''">
+                and tk_y = #{tkY}
+            </if>
+            <if test="tkOrient != null  and tkOrient != ''">
+                and tk_orient = #{tkOrient}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectTkByTkId" parameterType="Long"
+            resultMap="TkResult">
+        <include refid="selectTkVo"/>
+        where tk_id = #{tkId}
+    </select>
+
+    <insert id="insertTk" parameterType="Tk" useGeneratedKeys="true"
+            keyProperty="tkId">
+        insert into tk
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="filesId != null">files_id,
+            </if>
+            <if test="tkName != null">tk_name,
+            </if>
+            <if test="tkX != null">tk_x,
+            </if>
+            <if test="tkY != null">tk_y,
+            </if>
+            <if test="updateTime != null">update_time,
+            </if>
+            <if test="tkOrient != null">tk_orient,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="filesId != null">#{filesId},
+            </if>
+            <if test="tkName != null">#{tkName},
+            </if>
+            <if test="tkX != null">#{tkX},
+            </if>
+            <if test="tkY != null">#{tkY},
+            </if>
+            <if test="updateTime != null">#{updateTime},
+            </if>
+            <if test="tkOrient != null">#{tkOrient},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateTk" parameterType="Tk">
+        update tk
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="filesId != null">files_id =
+                #{filesId},
+            </if>
+            <if test="tkName != null">tk_name =
+                #{tkName},
+            </if>
+            <if test="tkX != null">tk_x =
+                #{tkX},
+            </if>
+            <if test="tkY != null">tk_y =
+                #{tkY},
+            </if>
+            <if test="updateTime != null">update_time =
+                #{updateTime},
+            </if>
+            <if test="tkOrient != null">tk_orient =
+                #{tkOrient},
+            </if>
+        </trim>
+        where tk_id = #{tkId}
+    </update>
+
+    <delete id="deleteTkByTkId" parameterType="Long">
+        delete
+        from tk
+        where tk_id = #{tkId}
+    </delete>
+
+    <delete id="deleteTkByTkIds" parameterType="String">
+        delete from tk where tk_id in
+        <foreach item="filesId" collection="array" open="(" separator="," close=")">
+            #{filesId}
+        </foreach>
+    </delete>
+</mapper>

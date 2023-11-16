@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tk.mapper.FilesMapper">
+
+    <resultMap type="Files" id="FilesResult">
+        <result property="filesId" column="files_id"/>
+        <result property="filesName" column="files_name"/>
+        <result property="updateTine" column="update_tine"/>
+    </resultMap>
+
+    <sql id="selectFilesVo">
+        select files_id, files_name, update_tine
+        from files
+    </sql>
+
+    <select id="selectFilesList" parameterType="Files" resultMap="FilesResult">
+        <include refid="selectFilesVo"/>
+        <where>
+            <if test="filesName != null  and filesName != ''">
+                and files_name like concat('%', #{filesName}, '%')
+            </if>
+            <if test="updateTine != null ">
+                and update_tine = #{updateTine}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectFilesByFilesId" parameterType="Long"
+            resultMap="FilesResult">
+        <include refid="selectFilesVo"/>
+        where files_id = #{filesId}
+    </select>
+
+    <insert id="insertFiles" parameterType="Files" useGeneratedKeys="true"
+            keyProperty="filesId">
+        insert into files
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="filesName != null">files_name,
+            </if>
+            <if test="updateTine != null">update_tine,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="filesName != null">#{filesName},
+            </if>
+            <if test="updateTine != null">#{updateTine},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateFiles" parameterType="Files">
+        update files
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="filesName != null">files_name =
+                #{filesName},
+            </if>
+            <if test="updateTine != null">update_tine =
+                #{updateTine},
+            </if>
+        </trim>
+        where files_id = #{filesId}
+    </update>
+
+    <delete id="deleteFilesByFilesId" parameterType="Long">
+        delete
+        from files
+        where files_id = #{filesId}
+    </delete>
+
+    <delete id="deleteFilesByFilesIds" parameterType="String">
+        delete from files where files_id in
+        <foreach item="filesId" collection="array" open="(" separator="," close=")">
+            #{filesId}
+        </foreach>
+    </delete>
+</mapper>
